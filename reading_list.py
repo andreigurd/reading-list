@@ -41,8 +41,8 @@ def datetime_now_stamp():
 def show_menu():
     print("")    
     print("[0] Exit")
-    print("[1] Add book")
-    # print("[2] x")
+    print("[1] Add Book")
+    print("[2] View All Books")
     # print("[3] x")
     # print("[4] x")
     # print("[5] x")
@@ -132,7 +132,7 @@ def add_book():
     print(f'Book added date entered as {date_string}')   
         
 #-------- date finished (if finished)
-    date_finished = "N/A"
+    date_finished = "Not Finished"
     if finish_flag == "finish_flag_active":
         while True:
             try:
@@ -182,6 +182,12 @@ def add_book():
     books.append(book_item)
     print(f'{title} added.')
 
+#-----------------------------------------------------------------------
+#   option [2] View All Contacts
+#-----------------------------------------------------------------------
+def view_books():
+    print("Displaying All Books")
+    print(tabulate(books, headers="keys", tablefmt="fancy_grid"))
 
 #-----------------------------------------------------------------------
 #   function to write to expenses json
@@ -204,15 +210,15 @@ while True:
     elif option == '1':
         add_book()
         write_json()
-    # elif option == '2':
-    #     view_contacts()
+    elif option == '2':
+        view_books()
     # elif option == '3': 
-    #     search_contacts()
+    #     
     # elif option == '4':
-    #     delete_contact()
-    #     write_json
+    #     
+    #     
     # elif option == '5':
-    #     export_text()
+    #     
 
     else:
         print("Invalid action. Please try again.")
