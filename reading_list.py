@@ -7,7 +7,7 @@ valid_status = ['want to read', 'reading', 'finished']
 valid_category = ["sci fi", "fantasy", "mystery", "thriller", "romance", "horror", "graphic novel"]
 
 #-----------------------------------------------------------------------
-#   opening tasks json file
+#   opening books json file
 #-----------------------------------------------------------------------
 try:
     with open('books.json', 'r') as file:
@@ -44,9 +44,10 @@ def show_menu():
     print("[1] Add Book")
     print("[2] View All Books")
     print("[3] View By Status")
-    # print("[4] x")
+    print("[4] Update Status")
     # print("[5] x")
     # print("[6] x")
+
 
 #-----------------------------------------------------------------------
 #   option [1] Add book
@@ -171,16 +172,70 @@ def add_book():
         "title" : title,
         "author" : author,
         "genre/category" : category,
+        "status" : status,
         "rating" : rating,
         "review" : review,
         "date added" : date_string,
         "date finished" : date_finished,
         "current page" : current_page,
-        "total book pages" : total_pages
+        "total pages" : total_pages
     }
 
     books.append(book_item)
     print(f'{title} added.')
+
+#-----------------------------------------------------------------------
+#    (only finished books) display numbered list to choose from
+#-----------------------------------------------------------------------
+def create_fin_numbered_list():    
+    finished_list = []
+    for book in books:
+        if book["status"] == "finished":
+            finished_list.append(book)
+
+    print('Displaying All Finished Books')
+    numbered_fin_list = []    
+    for number, book_item in enumerate(finished_list, start=1):
+            numbered_books = {
+            "number": number,
+            "title" : book_item["title"],
+            "author" : book_item["author"],
+            "genre/category" : book_item["genre/category"],
+            "status" : book_item["status"],
+            "rating" : book_item["rating"],
+            "review" : book_item["review"],
+            "date added" : book_item["date added"],
+            "date finished" : book_item["date finished"],
+            "current page" : book_item["current page"],
+            "total pages" : book_item["total pages"]
+            }                
+            numbered_fin_list.append(numbered_books)
+
+    print(tabulate(numbered_fin_list,headers = "keys", tablefmt="fancy_grid"))
+
+#-----------------------------------------------------------------------
+#    display numbered list to choose from
+#-----------------------------------------------------------------------
+def create_numbered_list():
+    print('Displaying All Books')
+    numbered_list = []    
+    for number, book_item in enumerate(books, start=1):
+            numbered_books = {
+            "number": number,
+            "title" : book_item["title"],
+            "author" : book_item["author"],
+            "genre/category" : book_item["genre/category"],
+            "status" : book_item["status"],
+            "rating" : book_item["rating"],
+            "review" : book_item["review"],
+            "date added" : book_item["date added"],
+            "date finished" : book_item["date finished"],
+            "current page" : book_item["current page"],
+            "total pages" : book_item["total pages"]
+            }                
+            numbered_list.append(numbered_books)
+
+    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))
 
 #-----------------------------------------------------------------------
 #   option [2] View All Contacts
@@ -208,6 +263,44 @@ def view_status():
         
     print(tabulate(searched_list,headers = "keys", tablefmt="fancy_grid"))
 
+#-----------------------------------------------------------------------
+#   option [4] Update Status
+#-----------------------------------------------------------------------
+
+def update_status():
+    # display numbered list to choose from.
+    create_numbered_list()    
+
+    # user chooses book # to update status.
+    while True:
+        try:
+            choice = int(input("Select book number to update status: "))
+            if 1 <= choice and choice <= len(books):
+                break
+            else:
+                print("Number out of range. Please try again.")
+
+        except ValueError:
+            print("Invalid entry. Please try again.")
+
+        # user chooses new status.   
+    while True:        
+        status = input("Enter status update (Want to Read / Reading / Finished): ").lower()
+
+        if status in valid_status:
+            break
+        else:
+            print("Invalid Status. Please try again.")
+
+            
+    # choice-1 is index for global books list that we want to mark complete.
+    selected_book = books[choice-1]
+
+    selected_book['status'] = status 
+    print(f'({selected_book["title"]}) book marked {status}.')
+        
+    print(tabulate(books,headers = "keys", tablefmt="fancy_grid"))
+
 
 #-----------------------------------------------------------------------
 #   function to write to expenses json
@@ -234,10 +327,10 @@ while True:
         view_books()
     elif option == '3': 
         view_status()
+    elif option == '4':
+        update_status()
+        write_json()
 
-    # elif option == '4':
-    #     
-    #     
     # elif option == '5':
     #     
 
