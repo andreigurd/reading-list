@@ -43,7 +43,7 @@ def show_menu():
     print("[0] Exit")
     print("[1] Add Book")
     print("[2] View All Books")
-    # print("[3] x")
+    print("[3] View By Status")
     # print("[4] x")
     # print("[5] x")
     # print("[6] x")
@@ -190,6 +190,26 @@ def view_books():
     print(tabulate(books, headers="keys", tablefmt="fancy_grid"))
 
 #-----------------------------------------------------------------------
+#   option [3] View By Status
+#-----------------------------------------------------------------------
+
+def view_status():    
+    while True:
+        search_term = input("Enter status to view (Want to Read, Reading, Finished): ").lower()
+        if search_term in valid_status:
+            break
+        else:
+            print("Invalid Status. Please try again.")
+    
+    searched_list = []
+    for book in books:
+        if search_term == book['status']:
+            searched_list.append(book)
+        
+    print(tabulate(searched_list,headers = "keys", tablefmt="fancy_grid"))
+
+
+#-----------------------------------------------------------------------
 #   function to write to expenses json
 #-----------------------------------------------------------------------
 def write_json():
@@ -212,8 +232,9 @@ while True:
         write_json()
     elif option == '2':
         view_books()
-    # elif option == '3': 
-    #     
+    elif option == '3': 
+        view_status()
+
     # elif option == '4':
     #     
     #     
