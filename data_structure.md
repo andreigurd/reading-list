@@ -42,11 +42,10 @@ markdown
 - [2] View All Books
 - [3] View By Status
 - [4] Update Status
-- [5] Rate Finished Book
-- [6] Review Finished Book
-- [7] Show Reading Statistics
-- [8] Search By Title or Author
-- [9] Delete a Book
-- [10] Reading Goal
-- [11] Export Reading Statistics Report
-- [12] Recommend Book
+- [5] Rate and Review Finished Book
+- [6] Show Reading Statistics
+- [7] Search By Title or Author
+- [8] Delete a Book
+- [9] Reading Goal
+- [10] Export Reading Statistics Report
+- [11] Recommend Book

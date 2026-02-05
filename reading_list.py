@@ -45,7 +45,7 @@ def show_menu():
     print("[2] View All Books")
     print("[3] View By Status")
     print("[4] Update Status")
-    # print("[5] x")
+    print("[5] Rate and Review Finished Book")
     # print("[6] x")
 
 
@@ -133,7 +133,7 @@ def add_book():
     print(f'Book added date entered as {date_string}')   
         
 #-------- date finished (if finished)
-    date_finished = "Not Finished"
+    date_finished = "not finished"
     if finish_flag == "finish_flag_active":
         while True:
             try:
@@ -184,40 +184,12 @@ def add_book():
     books.append(book_item)
     print(f'{title} added.')
 
-#-----------------------------------------------------------------------
-#    (only finished books) display numbered list to choose from
-#-----------------------------------------------------------------------
-def create_fin_numbered_list():    
-    finished_list = []
-    for book in books:
-        if book["status"] == "finished":
-            finished_list.append(book)
-
-    print('Displaying All Finished Books')
-    numbered_fin_list = []    
-    for number, book_item in enumerate(finished_list, start=1):
-            numbered_books = {
-            "number": number,
-            "title" : book_item["title"],
-            "author" : book_item["author"],
-            "genre/category" : book_item["genre/category"],
-            "status" : book_item["status"],
-            "rating" : book_item["rating"],
-            "review" : book_item["review"],
-            "date added" : book_item["date added"],
-            "date finished" : book_item["date finished"],
-            "current page" : book_item["current page"],
-            "total pages" : book_item["total pages"]
-            }                
-            numbered_fin_list.append(numbered_books)
-
-    print(tabulate(numbered_fin_list,headers = "keys", tablefmt="fancy_grid"))
 
 #-----------------------------------------------------------------------
-#    display numbered list to choose from
+#    create numbered list to choose from (note this does not print)
 #-----------------------------------------------------------------------
 def create_numbered_list():
-    print('Displaying All Books')
+    
     numbered_list = []    
     for number, book_item in enumerate(books, start=1):
             numbered_books = {
@@ -234,11 +206,47 @@ def create_numbered_list():
             "total pages" : book_item["total pages"]
             }                
             numbered_list.append(numbered_books)
+    
+    return numbered_list
 
-    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))
 
 #-----------------------------------------------------------------------
-#   option [2] View All Contacts
+#    (only finished books) display numbered list to choose from
+#-----------------------------------------------------------------------
+# note finished books list will have a different number but will also keep global list number for refrencing global books list.
+
+def create_fin_numbered_list():
+    numbered_list = create_numbered_list()
+
+    finished_books = []
+    for book in numbered_list:
+        if book["status"] == "finished":
+            finished_books.append(book)      
+        
+    numbered_fin_list = []
+    for number, book in enumerate(finished_books, start=1):
+        if book["status"] == "finished":
+            fin_numbered_books = {
+            "number": number,
+            "title" : book["title"],
+            "author" : book["author"],
+            "genre/category" : book["genre/category"],
+            "status" : book["status"],
+            "rating" : book["rating"],
+            "review" : book["review"],
+            "date added" : book["date added"],
+            "date finished" : book["date finished"],
+            "current page" : book["current page"],
+            "total pages" : book["total pages"],
+            "global number": book["number"]
+            } 
+
+            numbered_fin_list.append(fin_numbered_books)
+
+    return numbered_fin_list
+
+#-----------------------------------------------------------------------
+#   option [2] View All Books
 #-----------------------------------------------------------------------
 def view_books():
     print("Displaying All Books")
@@ -268,8 +276,10 @@ def view_status():
 #-----------------------------------------------------------------------
 
 def update_status():
-    # display numbered list to choose from.
-    create_numbered_list()    
+    # create numbered list to choose from.
+    print('Displaying All Books')
+    numbered_list = create_numbered_list()
+    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))    
 
     # user chooses book # to update status.
     while True:
@@ -300,6 +310,71 @@ def update_status():
     print(f'({selected_book["title"]}) book marked {status}.')
         
     print(tabulate(books,headers = "keys", tablefmt="fancy_grid"))
+#-----------------------------------------------------------------------
+#   option [5] Update Rate and review finished books
+#-----------------------------------------------------------------------
+def update_rating():     
+    # display numbered finished list to choose from.
+
+    print('Displaying Finished Books')
+    numbered_fin_list = create_fin_numbered_list()
+    if not numbered_fin_list:
+        print("No books are currently finished.")
+        return
+    else:          
+        print(tabulate(numbered_fin_list,headers = "keys", tablefmt="fancy_grid"))            
+
+    while True:
+        try:
+            choice = int(input("Select book number to rate and review: "))
+            if 1 <= choice and choice <= len(numbered_fin_list):
+                # selected_fin_book = numbered_fin_list[choice]
+                # global_number = selected_fin_book['global_number']
+                break
+            else:
+                print("Number out of range. Please try again.")
+
+        except ValueError:
+            print("Invalid entry. Please try again.")
+    
+    # choice should match number from numbered_fin_list or match global number from books    
+    selected_book = numbered_fin_list[choice-1]    
+    # ^ this gives us the whole book dictionary
+    global_number = selected_book['global number']    
+    # ^ this should give us the cooresponding global number
+    global_selected_book = books[global_number-1]
+
+    
+    while True:
+            try:
+                rating = int(input("Select book rating (1 to 5): "))
+                if 1<= rating and rating <=5:                    
+                    global_selected_book['rating'] = rating
+                    break
+                else:
+                    print("Number out of range. Please try again.")
+            except ValueError:
+                print("Invalid entry. Please try again.")            
+    
+    while True:
+        optional = input("Do you want to leave a review (Yes or No)").lower()
+        if optional == "yes":
+            try:
+                review = str(input("Enter book review: "))
+                if review == "":
+                    print("Blank is invalid entry. Please try again.")
+                else:                    
+                    global_selected_book['review'] = review
+                    break                
+            except ValueError:
+                print("Invalid entry. Please try again.")
+        elif optional == "no":
+            break
+        else:
+            print("Invalid entry. Please try again.")
+
+    print(f'({global_selected_book["title"]}) book rating and review updated.')
+
 
 
 #-----------------------------------------------------------------------
@@ -330,9 +405,9 @@ while True:
     elif option == '4':
         update_status()
         write_json()
-
-    # elif option == '5':
-    #     
+    elif option == '5':
+        update_rating()
+        write_json()
 
     else:
         print("Invalid action. Please try again.")
