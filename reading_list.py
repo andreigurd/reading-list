@@ -46,7 +46,7 @@ def show_menu():
     print("[3] View By Status")
     print("[4] Update Status")
     print("[5] Rate and Review Finished Book")
-    # print("[6] x")
+    print("[6] Show Reading Statistics")
 
 
 #-----------------------------------------------------------------------
@@ -375,6 +375,62 @@ def update_rating():
 
     print(f'({global_selected_book["title"]}) book rating and review updated.')
 
+#-----------------------------------------------------------------------
+#   option [6] Show reading stats
+#-----------------------------------------------------------------------
+def show_statistics():
+#-------- Total books tracked
+    total_books = len(books)    
+
+    fin_books = []
+    for book in books:
+        if book['status'] == "finished":
+            fin_books.append(book)        
+    
+    rating_sum = sum(item['rating'] for item in fin_books)
+
+    total_rated_books = len(fin_books)
+    if total_rated_books:
+        average_rating = rating_sum / total_rated_books
+    else:
+        print("No current finished books.")
+
+#-------- Books finished this month
+        
+    month_fin_books = []
+    for book in fin_books:
+        now = datetime.now()
+        date_string = now.strftime("%Y-%m-%d %H:%M:%S")       
+
+        book_date = book['date finished'][:7]
+        month_now = date_string[:7]
+
+        if book_date == month_now:
+            month_fin_books.append(book)
+        
+#-------- Most read author      
+    # max() finds the largest element in an iterable
+
+    author_list = []
+    for author in books:
+        author_list.append(author['author'])
+    #print(author_list)
+    most_author = max(author_list, key=author_list.count)
+    print(most_author)
+        
+#-------- Current reading streak (most days in a row at least one book is in reading status)
+
+    books_reading = []
+    for reading in books:
+        if reading['status'] == "reading":
+            books_reading.append(reading)
+
+    # Statistics Feature:
+    # - Total books tracked
+    # - Average rating of finished books
+    # - Books finished this month
+    # - Most read author
+    # - Current reading streak
 
 
 #-----------------------------------------------------------------------
@@ -408,6 +464,8 @@ while True:
     elif option == '5':
         update_rating()
         write_json()
+    elif option == '6':
+        show_statistics()
 
     else:
         print("Invalid action. Please try again.")
