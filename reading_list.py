@@ -45,8 +45,9 @@ def show_menu():
     print("[2] View All Books")
     print("[3] View By Status")
     print("[4] Update Status")
-    print("[5] Rate and Review Finished Book")
-    print("[6] Show Reading Statistics")
+    print("[5] Log Pages Read")
+    print("[6] Rate and Review Finished Book")
+    print("[7] Show Reading Statistics")
 
 
 #-----------------------------------------------------------------------
@@ -93,7 +94,7 @@ def add_book():
         if status == "reading":
             reading_flag = "reading_flag_active"            
         
-        if status in valid_status:
+        if status == "want to read":
             break
         else:
             print("Invalid Status. Please try again.")
@@ -133,18 +134,29 @@ def add_book():
     print(f'Book added date entered as {date_string}')   
         
 #-------- date finished (if finished)
+# this should be timestamped not user input
+    
+    
     date_finished = "not finished"
     if finish_flag == "finish_flag_active":
-        while True:
-            try:
-                date_finished = str(input("Enter date book was finished on (yyyy-mm-dd) format): "))
-                if date_finished == '':
-                    print("Blank is invalid entry. Please try again.")
-                else:
-                    break
+        date_finished = datetime_now_stamp()
+
+    #     while True:
+    #         try:
+    #             date_finished = str(input("Enter date book was finished on (yyyy-mm-dd) format): "))
+    #             if date_finished == '':
+    #                 print("Blank is invalid entry. Please try again.")
+    #             else:
+    #                 break
                 
-            except ValueError:
-                print("Invalid entry. Please try again.")
+    #         except ValueError:
+    #             print("Invalid entry. Please try again.")
+
+#-------- date started reading    
+    
+    started_reading = "not reading"
+    if reading_flag == "reading_flag_active":
+        started_reading = datetime_now_stamp()
 
 #-------- current page (if reading)
     current_page = "N/A"
@@ -176,7 +188,8 @@ def add_book():
         "rating" : rating,
         "review" : review,
         "date added" : date_string,
-        "date finished" : date_finished,
+        "date started reading" : started_reading,
+        "date finished" : date_finished,        
         "current page" : current_page,
         "total pages" : total_pages
     }
@@ -201,6 +214,7 @@ def create_numbered_list():
             "rating" : book_item["rating"],
             "review" : book_item["review"],
             "date added" : book_item["date added"],
+            "date started reading" : book_item["started_reading"],
             "date finished" : book_item["date finished"],
             "current page" : book_item["current page"],
             "total pages" : book_item["total pages"]
@@ -235,6 +249,7 @@ def create_fin_numbered_list():
             "rating" : book["rating"],
             "review" : book["review"],
             "date added" : book["date added"],
+            "date started reading" : book["started_reading"],
             "date finished" : book["date finished"],
             "current page" : book["current page"],
             "total pages" : book["total pages"],
@@ -297,8 +312,18 @@ def update_status():
     while True:        
         status = input("Enter status update (Want to Read / Reading / Finished): ").lower()
 
-        if status in valid_status:
+        if status == "want to read":
+            started_reading = "not reading"
+            date_finished = "not finished"
             break
+        elif status == "reading":
+            started_reading = datetime_now_stamp()
+            date_finished = "not finished"
+            break
+        elif status == "finished":
+                date_finished = datetime_now_stamp()
+                current_page = "N/A"
+                break
         else:
             print("Invalid Status. Please try again.")
 
@@ -306,12 +331,38 @@ def update_status():
     # choice-1 is index for global books list that we want to mark complete.
     selected_book = books[choice-1]
 
-    selected_book['status'] = status 
+    selected_book['status'] = status
+    selected_book['date started reading'] = started_reading
+    selected_book['date finished'] = date_finished 
+    selected_book['current page'] = current_page 
     print(f'({selected_book["title"]}) book marked {status}.')
         
     print(tabulate(books,headers = "keys", tablefmt="fancy_grid"))
+    
 #-----------------------------------------------------------------------
-#   option [5] Update Rate and review finished books
+#   option [6] Log Pages Read
+#-----------------------------------------------------------------------
+    
+def log_pages_read():
+
+    # create numbered list to choose from.
+    print('Displaying All Books')
+    numbered_list = create_numbered_list()
+    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))    
+
+    # user chooses book # to update status.
+    while True:
+        try:
+            choice = int(input("Select book number to log read pages: "))
+            if 1 <= choice and choice <= len(books):
+                break
+            else:
+                print("Number out of range. Please try again.")
+
+        except ValueError:
+            print("Invalid entry. Please try again.")    
+#-----------------------------------------------------------------------
+#   option [6] Update Rate and review finished books
 #-----------------------------------------------------------------------
 def update_rating():     
     # display numbered finished list to choose from.
@@ -376,7 +427,7 @@ def update_rating():
     print(f'({global_selected_book["title"]}) book rating and review updated.')
 
 #-----------------------------------------------------------------------
-#   option [6] Show reading stats
+#   option [7] Show reading stats
 #-----------------------------------------------------------------------
 def show_statistics():
 #-------- Total books tracked
@@ -462,9 +513,12 @@ while True:
         update_status()
         write_json()
     elif option == '5':
-        update_rating()
+        log_pages_read()
         write_json()
     elif option == '6':
+        update_rating()
+        write_json()
+    elif option == '7':
         show_statistics()
 
     else:

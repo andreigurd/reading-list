@@ -12,7 +12,7 @@ markdown
 - Search by title or author
 - Delete a book
 - Save/load from JSON
-- auto Track and display reading pace (pages per day) at top
+- auto Track and display reading pace (pages per day) at top (need user to report pages read)
 - Track reading goal (e.g., "read 12 books this year")
 - Export reading stats report
 - Recommend random book from "Want to Read" list
@@ -21,7 +21,7 @@ markdown
     - Average rating of finished books
     - Books finished this month
     - Most read author
-    - Current reading streak
+    - Current reading streak (need user to report pages read)
 
 
 ## Book Object
@@ -42,10 +42,11 @@ markdown
 - [2] View All Books
 - [3] View By Status
 - [4] Update Status
-- [5] Rate and Review Finished Book
-- [6] Show Reading Statistics
-- [7] Search By Title or Author
-- [8] Delete a Book
-- [9] Reading Goal
-- [10] Export Reading Statistics Report
-- [11] Recommend Book
+- [5] Log Pages Read
+- [6] Rate and Review Finished Book
+- [7] Show Reading Statistics
+- [8] Search By Title or Author
+- [9] Delete a Book
+- [10] Reading Goal
+- [11] Export Reading Statistics Report
+- [12] Recommend Book
