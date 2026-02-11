@@ -5,6 +5,7 @@ import os
 
 valid_status = ['want to read', 'reading', 'finished']
 valid_category = ["sci fi", "fantasy", "mystery", "thriller", "romance", "horror", "graphic novel"]
+reading_log = []
 
 #-----------------------------------------------------------------------
 #   opening books json file
@@ -33,6 +34,21 @@ def datetime_now_stamp():
     now = datetime.now()
     date_string = now.strftime("%Y-%m-%d")
     return date_string
+
+#-----------------------------------------------------------------------
+#   showing reading streak
+#-----------------------------------------------------------------------
+def show_streak():
+
+    print("Current Reading Streak Days!")
+    unique_dates = []
+    for date in reading_log:
+        unique_dates.append(reading_log["date of reading"])
+    
+    # trim dates to remove repeats
+    unique_dates = set(unique_dates)
+
+    print(len(f'{len(unique_dates)} Days'))
 
 #-----------------------------------------------------------------------
 #   showing menu
@@ -159,7 +175,7 @@ def add_book():
         started_reading = datetime_now_stamp()
 
 #-------- current page (if reading)
-    current_page = "N/A"
+    current_page = 0
     if reading_flag == "reading_flag_active":
         while True:
             try:
@@ -214,7 +230,7 @@ def create_numbered_list():
             "rating" : book_item["rating"],
             "review" : book_item["review"],
             "date added" : book_item["date added"],
-            "date started reading" : book_item["started_reading"],
+            "date started reading" : book_item["date started reading"],
             "date finished" : book_item["date finished"],
             "current page" : book_item["current page"],
             "total pages" : book_item["total pages"]
@@ -231,7 +247,7 @@ def create_numbered_list():
 
 def create_fin_numbered_list():
     numbered_list = create_numbered_list()
-
+    # filter list and then enumerate after to avoid number gaps
     finished_books = []
     for book in numbered_list:
         if book["status"] == "finished":
@@ -249,7 +265,7 @@ def create_fin_numbered_list():
             "rating" : book["rating"],
             "review" : book["review"],
             "date added" : book["date added"],
-            "date started reading" : book["started_reading"],
+            "date started reading" : book["date started reading"],
             "date finished" : book["date finished"],
             "current page" : book["current page"],
             "total pages" : book["total pages"],
@@ -260,6 +276,41 @@ def create_fin_numbered_list():
 
     return numbered_fin_list
 
+#-----------------------------------------------------------------------
+#    (only reading now books) display numbered list to choose from
+#-----------------------------------------------------------------------
+# note finished books list will have a different number but will also keep global list number for refrencing global books list.
+
+def create_reading_numbered_list():
+    numbered_list = create_numbered_list()
+
+    reading_books = []
+    for book in numbered_list:
+        if book["status"] == "reading":
+            reading_books.append(book)
+
+    numbered_reading_list = []
+    for number, book in enumerate(reading_books, start=1):
+        if book["status"] == "reading":
+            reading_numbered_books = {
+            "number": number,
+            "title" : book["title"],
+            "author" : book["author"],
+            "genre/category" : book["genre/category"],
+            "status" : book["status"],
+            "rating" : book["rating"],
+            "review" : book["review"],
+            "date added" : book["date added"],
+            "date started reading" : book["date started reading"],
+            "date finished" : book["date finished"],
+            "current page" : book["current page"],
+            "total pages" : book["total pages"],
+            "global number": book["number"]
+            } 
+
+            numbered_reading_list.append(reading_numbered_books)
+
+    return numbered_reading_list
 #-----------------------------------------------------------------------
 #   option [2] View All Books
 #-----------------------------------------------------------------------
@@ -291,10 +342,11 @@ def view_status():
 #-----------------------------------------------------------------------
 
 def update_status():
-    # create numbered list to choose from.
+    # create numbered list of all to choose from.
     print('Displaying All Books')
     numbered_list = create_numbered_list()
-    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))    
+
+    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))  
 
     # user chooses book # to update status.
     while True:
@@ -322,45 +374,74 @@ def update_status():
             break
         elif status == "finished":
                 date_finished = datetime_now_stamp()
-                current_page = "N/A"
+                current_page = 0
+                selected_book['current page'] = current_page
                 break
         else:
             print("Invalid Status. Please try again.")
 
             
-    # choice-1 is index for global books list that we want to mark complete.
+    # choice-1 is index for global books list that we want change status.
     selected_book = books[choice-1]
 
     selected_book['status'] = status
     selected_book['date started reading'] = started_reading
     selected_book['date finished'] = date_finished 
-    selected_book['current page'] = current_page 
+    #selected_book['current page'] = current_page 
     print(f'({selected_book["title"]}) book marked {status}.')
         
-    print(tabulate(books,headers = "keys", tablefmt="fancy_grid"))
-    
+
 #-----------------------------------------------------------------------
-#   option [6] Log Pages Read
+#   option [5] Log Pages Read
 #-----------------------------------------------------------------------
     
 def log_pages_read():
-
-    # create numbered list to choose from.
-    print('Displaying All Books')
-    numbered_list = create_numbered_list()
+    # note user cant log pages on book that are in status not started or finished.
+    # create reading numbered list to choose from.
+    print('Displaying Books Being Read')
+    numbered_list = create_reading_numbered_list()
     print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))    
 
     # user chooses book # to update status.
     while True:
         try:
-            choice = int(input("Select book number to log read pages: "))
-            if 1 <= choice and choice <= len(books):
+            choice = int(input("Select book number to log read pages for: "))
+            if 1 <= choice and choice <= len(numbered_list):
                 break
             else:
                 print("Number out of range. Please try again.")
 
         except ValueError:
-            print("Invalid entry. Please try again.")    
+            print("Invalid entry. Please try again.")
+                
+    selected_book = books[choice-1]
+    previous_page = selected_book['current page']    
+
+    while True:
+        try:
+            current_page = int(input(f'Enter current page number of ({selected_book['title']}): '))
+            if current_page > previous_page:
+                break
+            elif current_page == previous_page:
+                print(f'Invalid entry. Enter page number greater than previous {previous_page} page.')
+            else:
+                print("Invalid entry. Please try again.")
+        except ValueError:
+            print("Invalid entry. Please try again.")
+
+    # previous_page = books[choice]['current page']
+    # print(previous_page)
+    # made gloabal reading_log = []
+    
+    pages_read = current_page - previous_page
+    selected_book['current page'] = current_page
+    reading_date = datetime_now_stamp()
+    date_read = {
+        "date of reading" : reading_date,
+        "pages read" : pages_read
+    }
+    reading_log.append(date_read)
+    print(f'{pages_read} pages of {selected_book["title"]} book logged.')
 #-----------------------------------------------------------------------
 #   option [6] Update Rate and review finished books
 #-----------------------------------------------------------------------
@@ -496,7 +577,8 @@ def write_json():
 #-----------------------------------------------------------------------
 
 while True:
-    show_menu()
+    show_streak()
+    show_menu()    
     option = input("\nSelect Option: ")
     if option == '0':        
         write_json()
