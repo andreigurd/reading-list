@@ -5,7 +5,6 @@ import os
 
 valid_status = ['want to read', 'reading', 'finished']
 valid_category = ["sci fi", "fantasy", "mystery", "thriller", "romance", "horror", "graphic novel"]
-reading_log = []
 
 #-----------------------------------------------------------------------
 #   opening books json file
@@ -27,6 +26,25 @@ except PermissionError:
     books = []
 
 #-----------------------------------------------------------------------
+#   opening reading_log json file
+#-----------------------------------------------------------------------
+try:
+    with open('reading_log.json', 'r') as file:
+        reading_log = json.load(file)
+except FileNotFoundError:
+    print("Log file not found. Blank list created.")
+    reading_log = [] # makes an empty list
+except json.JSONDecodeError:
+    print("Issue loading Log file. File empty or invalid JSON file. Blank Log list created.")
+    reading_log = []
+except ValueError:
+    print("Invalid budget item. Blank list created.")
+    reading_log = []
+except PermissionError:
+    print("Need permission to access Log file. Blank Log list created.")
+    reading_log = []
+
+#-----------------------------------------------------------------------
 #   timestamp
 #-----------------------------------------------------------------------
 
@@ -38,17 +56,17 @@ def datetime_now_stamp():
 #-----------------------------------------------------------------------
 #   showing reading streak
 #-----------------------------------------------------------------------
-def show_streak():
+# def show_streak():
 
-    print("Current Reading Streak Days!")
-    unique_dates = []
-    for date in reading_log:
-        unique_dates.append(reading_log["date of reading"])
+#     print("Current Reading Streak Days!")
+#     unique_dates = []
+#     for date in reading_log:
+#         unique_dates.append(reading_log["date of reading"])
     
-    # trim dates to remove repeats
-    unique_dates = set(unique_dates)
+#     # trim dates to remove repeats
+#     unique_dates = set(unique_dates)
 
-    print(len(f'{len(unique_dates)} Days'))
+#     print(len(f'{len(unique_dates)} Days'))
 
 #-----------------------------------------------------------------------
 #   showing menu
@@ -430,7 +448,7 @@ def log_pages_read():
             print("Invalid entry. Please try again.")
 
     # previous_page = books[choice]['current page']
-    # print(previous_page)
+
     # made gloabal reading_log = []
     
     pages_read = current_page - previous_page
@@ -528,10 +546,10 @@ def show_statistics():
         print("No current finished books.")
 
 #-------- Books finished this month
-        
+    now = datetime.now()    
     month_fin_books = []
     for book in fin_books:
-        now = datetime.now()
+        
         date_string = now.strftime("%Y-%m-%d %H:%M:%S")       
 
         book_date = book['date finished'][:7]
@@ -540,44 +558,76 @@ def show_statistics():
         if book_date == month_now:
             month_fin_books.append(book)
         
-#-------- Most read author      
+#-------- Most read author (of books being read or finished)     
     # max() finds the largest element in an iterable
 
     author_list = []
     for author in books:
-        author_list.append(author['author'])
+        if author["status"] != "want to read":
+            author_list.append(author['author'])
     #print(author_list)
     most_author = max(author_list, key=author_list.count)
-    print(most_author)
+    #print(most_author)
         
 #-------- Current reading streak (most days in a row at least one book is in reading status)
 
-    books_reading = []
-    for reading in books:
-        if reading['status'] == "reading":
-            books_reading.append(reading)
+    # note there is a gloabal reading_log = [] of date objects
+        
+    # need a list of just dates and to change the strings to date objects.
+    page_dates = []
+    for entry in reading_log:        
+        converted_date = datetime.strptime(entry["date of reading"], "%Y-%m-%d").date()
+        page_dates.append(converted_date)        
+    
+    # trim dates with set() to remove repeats
+    # set() may not preserve order so sort list in decending order
+    # need date now but as object. just use date.today() not datetime
+    today = date.today()
+    
+    page_dates = set(page_dates)
+    
+    # page_dates is just dates so dont need key
+    sorted_page_dates = sorted(page_dates, reverse=True)
 
-    # Statistics Feature:
-    # - Total books tracked
-    # - Average rating of finished books
-    # - Books finished this month
-    # - Most read author
-    # - Current reading streak
+    days_streak = []
+    for number, date_item in enumerate(sorted_page_dates):
+        if timedelta(days=number) == today - date_item:
+            days_streak.append(date_item)
+        else:            
+            break
 
+    #print("Current Reading Streak!")
+    #print((f'{len(days_streak)} Days'))
+
+    stats_table = [
+        ["Total Books Tracked", total_books],
+        ["Average Rating of Finished Books", average_rating],
+        ["Books Fininished This Month", len(month_fin_books)],
+        ["Most Read Author", most_author],
+        ["Current Reading Streak Days", len(days_streak)]
+    ]
+    print("---Book Statistics---")
+    print(tabulate(stats_table, tablefmt="fancy_grid"))
 
 #-----------------------------------------------------------------------
-#   function to write to expenses json
+#   function to write to books json
 #-----------------------------------------------------------------------
 def write_json():
     with open('books.json', 'w') as file:
         json.dump(books, file, indent=4)
 
 #-----------------------------------------------------------------------
+#   function to write to reading_log json
+#-----------------------------------------------------------------------
+def write_pages_log_json():
+    with open('reading_log.json', 'w') as file:
+        json.dump(reading_log, file, indent=4)
+
+#-----------------------------------------------------------------------
 #   while loop to get user input
 #-----------------------------------------------------------------------
 
-while True:
-    show_streak()
+while True:    
     show_menu()    
     option = input("\nSelect Option: ")
     if option == '0':        
@@ -597,6 +647,7 @@ while True:
     elif option == '5':
         log_pages_read()
         write_json()
+        write_pages_log_json()
     elif option == '6':
         update_rating()
         write_json()
