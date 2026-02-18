@@ -49,4 +49,4 @@ markdown
 - [9] Delete a Book
 - [10] Reading Goal
 - [11] Export Reading Statistics Report
-- [12] Recommend Book
+- [12] Get Book Recommendation

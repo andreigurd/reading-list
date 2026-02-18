@@ -82,6 +82,7 @@ def show_menu():
     print("[5] Log Pages Read")
     print("[6] Rate and Review Finished Book")
     print("[7] Show Reading Statistics")
+    print("[8] Search By Title or Author")
 
 
 #-----------------------------------------------------------------------
@@ -596,9 +597,6 @@ def show_statistics():
         else:            
             break
 
-    #print("Current Reading Streak!")
-    #print((f'{len(days_streak)} Days'))
-
     stats_table = [
         ["Total Books Tracked", total_books],
         ["Average Rating of Finished Books", average_rating],
@@ -608,6 +606,25 @@ def show_statistics():
     ]
     print("---Book Statistics---")
     print(tabulate(stats_table, tablefmt="fancy_grid"))
+
+#-----------------------------------------------------------------------
+#   option [8] Search By Title or Author
+#-----------------------------------------------------------------------
+def search():
+    search_term = input("Enter search term for Title or Author search: ").strip().lower()
+    searched_list = []
+    for book in books:
+        if (
+        search_term == book['title'] or
+        search_term == book['author']            
+        ):
+            searched_list.append(book)
+    
+    if searched_list:
+        print("---Displaying Matching Books---")
+        print(tabulate(searched_list,headers = "keys", tablefmt="fancy_grid"))
+    else:
+        print("No matching books.")
 
 #-----------------------------------------------------------------------
 #   function to write to books json
@@ -653,6 +670,8 @@ while True:
         write_json()
     elif option == '7':
         show_statistics()
+    elif option == '8':
+        search()
 
     else:
         print("Invalid action. Please try again.")
