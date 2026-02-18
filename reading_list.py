@@ -83,6 +83,7 @@ def show_menu():
     print("[6] Rate and Review Finished Book")
     print("[7] Show Reading Statistics")
     print("[8] Search By Title or Author")
+    print("[9] Delete a Book")
 
 
 #-----------------------------------------------------------------------
@@ -627,6 +628,33 @@ def search():
         print("No matching books.")
 
 #-----------------------------------------------------------------------
+#   option [9] Delete a Book
+#-----------------------------------------------------------------------
+def delete_book():
+    # create numbered list of all to choose from.
+    print('Displaying All Books')
+    numbered_list = create_numbered_list()
+
+    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid")) 
+
+    # user chooses task # to delete.
+    removed_book_list = []
+    while True:
+        try:
+            choice = int(input("Select book to delete: "))
+            if 1 <= choice and choice <= len(books):
+                print(f"Book number {choice} deleted.")                
+                removed_book = books.pop(choice-1) 
+                removed_book_list.append(removed_book)                               
+                print(tabulate(removed_book_list,headers = "keys", tablefmt="fancy_grid"))                
+                break
+            else:
+                print("Number out of range. Please try again.")
+
+        except ValueError:
+            print("Invalid entry. Please try again.")
+
+#-----------------------------------------------------------------------
 #   function to write to books json
 #-----------------------------------------------------------------------
 def write_json():
@@ -672,6 +700,9 @@ while True:
         show_statistics()
     elif option == '8':
         search()
+    elif option == '9':
+        delete_book()
+        write_json()
 
     else:
         print("Invalid action. Please try again.")
