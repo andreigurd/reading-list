@@ -45,6 +45,26 @@ except PermissionError:
     reading_log = []
 
 #-----------------------------------------------------------------------
+#   opening reading goals json file
+#-----------------------------------------------------------------------
+# reading goal is a simple int but better to store as a dictionary. easier to update with user input later. note for now reading_goals = {year_goal:0}
+try:
+    with open('reading_goals.json', 'r') as file:
+        reading_goals = json.load(file)
+except FileNotFoundError:
+    print("Goals file not found. Goal set to default zero.")
+    reading_goals = {"year_goal": 0} # makes default zero books goal
+except json.JSONDecodeError:
+    print("Issue loading Goals file. File empty or invalid JSON file. Goal set to default zero.")
+    reading_goals = {"year_goal": 0}
+except ValueError:
+    print("Invalid Goals item. Goal set to default zero.")
+    reading_goals = {"year_goal": 0}
+except PermissionError:
+    print("Need permission to access Goals file. Goal set to default zero.")
+    reading_goals = {"year_goal": 0}
+
+#-----------------------------------------------------------------------
 #   timestamp
 #-----------------------------------------------------------------------
 
@@ -84,6 +104,7 @@ def show_menu():
     print("[7] Show Reading Statistics")
     print("[8] Search By Title or Author")
     print("[9] Delete a Book")
+    print("[10] Book Reading Goals")
 
 
 #-----------------------------------------------------------------------
@@ -655,6 +676,68 @@ def delete_book():
             print("Invalid entry. Please try again.")
 
 #-----------------------------------------------------------------------
+#   sub feature determin goal status
+#-----------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------
+#   option [10] Reading Goal
+#-----------------------------------------------------------------------
+def set_goal():
+    # feature asks for user input books_goal so gloabal value ignored.
+
+    #-------- Books finished this year
+    now = datetime.now()    
+    this_year_fin_books = []
+    # loop through books and append all with date finished this year
+    date_string = now.strftime("%Y-%m-%d %H:%M:%S") 
+    for book in books:        
+        #date_string = now.strftime("%Y-%m-%d %H:%M:%S")       
+
+        book_date = book['date finished'][:4]
+        year_now = date_string[:4]
+
+        if book_date == year_now:
+            this_year_fin_books.append(book)
+
+    #-------- determin goal status
+
+    number_fin_books = len(this_year_fin_books)
+    current_goal = reading_goals["year_goal"] 
+    if 0 < current_goal:
+        if current_goal <= number_fin_books:
+            print(f'Reading goal met! {len(this_year_fin_books)} books read this year.')
+        else:               
+            print(f'Reading goal not met yet. {len(this_year_fin_books)} books read this year.')
+    
+    #-------- overide or user existing goal
+    if current_goal > 0:
+        print(f"Current yearly reading goal is {current_goal} books.")
+        while True:            
+            answer = input("Override or Continue with goal?: ").lower()
+
+            if answer == "override":
+                reading_goals.clear()                
+                break 
+
+            elif answer == "continue":
+                return
+
+            else:
+                print("Invalid option. Please try again.")
+
+    #-------- input reading goal amount 
+    while True:        
+        try:
+            reading_goals["year_goal"] = int(input("Enter yearly book goal: "))
+            print(f"goal of {reading_goals["year_goal"]} books entered.")
+            break         
+
+        except ValueError:
+            print("Invalid number. Please try again.")
+
+
+#-----------------------------------------------------------------------
 #   function to write to books json
 #-----------------------------------------------------------------------
 def write_json():
@@ -667,6 +750,14 @@ def write_json():
 def write_pages_log_json():
     with open('reading_log.json', 'w') as file:
         json.dump(reading_log, file, indent=4)
+
+#-----------------------------------------------------------------------
+#   function to write to reading_goal json
+#-----------------------------------------------------------------------
+def write_reading_goals_json():
+    with open('reading_goals.json', 'w') as file:
+        json.dump(reading_goals, file, indent=4)
+
 
 #-----------------------------------------------------------------------
 #   while loop to get user input
@@ -703,6 +794,8 @@ while True:
     elif option == '9':
         delete_book()
         write_json()
-
+    elif option == '10':
+        set_goal()
+        write_reading_goals_json()
     else:
         print("Invalid action. Please try again.")
