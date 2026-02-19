@@ -34,7 +34,7 @@ try:
         reading_log = json.load(file)
 except FileNotFoundError:
     print("Log file not found. Blank list created.")
-    reading_log = [] # makes an empty list
+    reading_log = []
 except json.JSONDecodeError:
     print("Issue loading Log file. File empty or invalid JSON file. Blank Log list created.")
     reading_log = []
@@ -54,7 +54,7 @@ try:
         reading_goals = json.load(file)
 except FileNotFoundError:
     print("Goals file not found. Goal set to default zero.")
-    reading_goals = {"year_goal": 0} # makes default zero books goal
+    reading_goals = {"year_goal": 0}
 except json.JSONDecodeError:
     print("Issue loading Goals file. File empty or invalid JSON file. Goal set to default zero.")
     reading_goals = {"year_goal": 0}
@@ -73,21 +73,6 @@ def datetime_now_stamp():
     now = datetime.now()
     date_string = now.strftime("%Y-%m-%d")
     return date_string
-
-#-----------------------------------------------------------------------
-#   showing reading streak
-#-----------------------------------------------------------------------
-# def show_streak():
-
-#     print("Current Reading Streak Days!")
-#     unique_dates = []
-#     for date in reading_log:
-#         unique_dates.append(reading_log["date of reading"])
-    
-#     # trim dates to remove repeats
-#     unique_dates = set(unique_dates)
-
-#     print(len(f'{len(unique_dates)} Days'))
 
 #-----------------------------------------------------------------------
 #   showing reading pace today
@@ -122,7 +107,6 @@ def show_menu():
     print("[11] Export Reading Statistics Report")
     print("[12] Get Book Recommendation")
 
-
 #-----------------------------------------------------------------------
 #   option [1] Add book
 #-----------------------------------------------------------------------
@@ -138,6 +122,7 @@ def add_book():
                 break                
         except ValueError:
             print("Invalid entry. Please try again.")
+
 #-------- author
     while True:
         try:
@@ -148,13 +133,15 @@ def add_book():
                 break                
         except ValueError:
             print("Invalid entry. Please try again.")
-#-------- genre/category    
+
+#-------- genre    
     while True:        
-        category = input("Enter book genre/category (Sci Fi, Fantasy, Mystery, Thriller, Romance, Horror, Graphic Novel): ").lower()
+        category = input("Enter book genre (Sci Fi, Fantasy, Mystery, Thriller, Romance, Horror, Graphic Novel): ").lower()
         if category in valid_category:
             break
         else:
             print("Invalid Status. Please try again.")
+
 #-------- status
     finish_flag = None
     reading_flag = None
@@ -171,6 +158,7 @@ def add_book():
             break
         else:
             print("Invalid Status. Please try again.")
+
 #-------- rating (if finished)
     rating = "N/A"
     if finish_flag == "finish_flag_active":
@@ -182,8 +170,8 @@ def add_book():
                 else:
                     print("Number out of range. Please try again.")
             except ValueError:
-                print("Invalid entry. Please try again.")        
-        
+                print("Invalid entry. Please try again.")
+
 #-------- optional review
     review = "N/A"
     while True:
@@ -201,31 +189,18 @@ def add_book():
             break
         else:
             print("Invalid entry. Please try again.")
-        
+
 #-------- date added
     date_string = datetime_now_stamp()
     print(f'Book added date entered as {date_string}')   
         
 #-------- date finished (if finished)
-# this should be timestamped not user input
-    
     
     date_finished = "not finished"
     if finish_flag == "finish_flag_active":
         date_finished = datetime_now_stamp()
 
-    #     while True:
-    #         try:
-    #             date_finished = str(input("Enter date book was finished on (yyyy-mm-dd) format): "))
-    #             if date_finished == '':
-    #                 print("Blank is invalid entry. Please try again.")
-    #             else:
-    #                 break
-
-    #         except ValueError:
-    #             print("Invalid entry. Please try again.")
-
-#-------- date started reading    
+#-------- started reading    
     
     started_reading = "not reading"
     if reading_flag == "reading_flag_active":
@@ -256,12 +231,12 @@ def add_book():
     book_item = {
         "title" : title,
         "author" : author,
-        "genre/category" : category,
+        "genre" : category,
         "status" : status,
         "rating" : rating,
         "review" : review,
         "date added" : date_string,
-        "date started reading" : started_reading,
+        "started reading " : started_reading,
         "date finished" : date_finished,        
         "current page" : current_page,
         "total pages" : total_pages
@@ -269,7 +244,6 @@ def add_book():
 
     books.append(book_item)
     print(f'{title} added.')
-
 
 #-----------------------------------------------------------------------
 #    create numbered list to choose from (note this does not print)
@@ -282,12 +256,12 @@ def create_numbered_list():
             "number": number,
             "title" : book_item["title"],
             "author" : book_item["author"],
-            "genre/category" : book_item["genre/category"],
+            "genre" : book_item["genre"],
             "status" : book_item["status"],
             "rating" : book_item["rating"],
             "review" : book_item["review"],
             "date added" : book_item["date added"],
-            "date started reading" : book_item["date started reading"],
+            "started reading " : book_item["started reading "],
             "date finished" : book_item["date finished"],
             "current page" : book_item["current page"],
             "total pages" : book_item["total pages"]
@@ -295,7 +269,6 @@ def create_numbered_list():
             numbered_list.append(numbered_books)
     
     return numbered_list
-
 
 #-----------------------------------------------------------------------
 #    (only finished books) display numbered list to choose from
@@ -317,12 +290,12 @@ def create_fin_numbered_list():
             "number": number,
             "title" : book["title"],
             "author" : book["author"],
-            "genre/category" : book["genre/category"],
+            "genre" : book["genre"],
             "status" : book["status"],
             "rating" : book["rating"],
             "review" : book["review"],
             "date added" : book["date added"],
-            "date started reading" : book["date started reading"],
+            "started reading " : book["started reading "],
             "date finished" : book["date finished"],
             "current page" : book["current page"],
             "total pages" : book["total pages"],
@@ -353,12 +326,12 @@ def create_reading_numbered_list():
             "number": number,
             "title" : book["title"],
             "author" : book["author"],
-            "genre/category" : book["genre/category"],
+            "genre" : book["genre"],
             "status" : book["status"],
             "rating" : book["rating"],
             "review" : book["review"],
             "date added" : book["date added"],
-            "date started reading" : book["date started reading"],
+            "started reading " : book["started reading "],
             "date finished" : book["date finished"],
             "current page" : book["current page"],
             "total pages" : book["total pages"],
@@ -368,12 +341,13 @@ def create_reading_numbered_list():
             numbered_reading_list.append(reading_numbered_books)
 
     return numbered_reading_list
+
 #-----------------------------------------------------------------------
 #   option [2] View All Books
 #-----------------------------------------------------------------------
 def view_books():
     print("Displaying All Books")
-    print(tabulate(books, headers="keys", tablefmt="fancy_grid"))
+    print(tabulate(books, headers="keys", tablefmt="grid"))
 
 #-----------------------------------------------------------------------
 #   option [3] View By Status
@@ -392,7 +366,7 @@ def view_status():
         if search_term == book['status']:
             searched_list.append(book)
         
-    print(tabulate(searched_list,headers = "keys", tablefmt="fancy_grid"))
+    print(tabulate(searched_list,headers = "keys", tablefmt="grid"))
 
 #-----------------------------------------------------------------------
 #   option [4] Update Status
@@ -403,7 +377,7 @@ def update_status():
     print('Displaying All Books')
     numbered_list = create_numbered_list()
 
-    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))  
+    print(tabulate(numbered_list,headers = "keys", tablefmt="grid"))  
 
     # user chooses book # to update status.
     while True:
@@ -436,17 +410,15 @@ def update_status():
                 break
         else:
             print("Invalid Status. Please try again.")
-
             
     # choice-1 is index for global books list that we want change status.
     selected_book = books[choice-1]
 
     selected_book['status'] = status
-    selected_book['date started reading'] = started_reading
+    selected_book['started reading '] = started_reading
     selected_book['date finished'] = date_finished 
     #selected_book['current page'] = current_page 
-    print(f'({selected_book["title"]}) book marked {status}.')
-        
+    print(f'({selected_book["title"]}) book marked {status}.')        
 
 #-----------------------------------------------------------------------
 #   option [5] Log Pages Read
@@ -457,7 +429,7 @@ def log_pages_read():
     # create reading numbered list to choose from.
     print('Displaying Books Being Read')
     numbered_list = create_reading_numbered_list()
-    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid"))    
+    print(tabulate(numbered_list,headers = "keys", tablefmt="grid"))    
 
     # user chooses book # to update status.
     while True:
@@ -486,9 +458,7 @@ def log_pages_read():
         except ValueError:
             print("Invalid entry. Please try again.")
 
-    # previous_page = books[choice]['current page']
-
-    # made gloabal reading_log = []
+    # note there is a gloabal reading_log = []
     
     pages_read = current_page - previous_page
     selected_book['current page'] = current_page
@@ -499,6 +469,7 @@ def log_pages_read():
     }
     reading_log.append(date_read)
     print(f'{pages_read} pages of {selected_book["title"]} book logged.')
+
 #-----------------------------------------------------------------------
 #   option [6] Update Rate and review finished books
 #-----------------------------------------------------------------------
@@ -511,14 +482,12 @@ def update_rating():
         print("No books are currently finished.")
         return
     else:          
-        print(tabulate(numbered_fin_list,headers = "keys", tablefmt="fancy_grid"))            
+        print(tabulate(numbered_fin_list,headers = "keys", tablefmt="grid"))            
 
     while True:
         try:
             choice = int(input("Select book number to rate and review: "))
-            if 1 <= choice and choice <= len(numbered_fin_list):
-                # selected_fin_book = numbered_fin_list[choice]
-                # global_number = selected_fin_book['global_number']
+            if 1 <= choice and choice <= len(numbered_fin_list):                
                 break
             else:
                 print("Number out of range. Please try again.")
@@ -527,12 +496,9 @@ def update_rating():
             print("Invalid entry. Please try again.")
     
     # choice should match number from numbered_fin_list or match global number from books    
-    selected_book = numbered_fin_list[choice-1]    
-    # ^ this gives us the whole book dictionary
-    global_number = selected_book['global number']    
-    # ^ this should give us the cooresponding global number
+    selected_book = numbered_fin_list[choice-1]  
+    global_number = selected_book['global number'] 
     global_selected_book = books[global_number-1]
-
     
     while True:
             try:
@@ -568,6 +534,7 @@ def update_rating():
 #   option [7] Show reading stats
 #-----------------------------------------------------------------------
 def show_statistics():
+
 #-------- Total books tracked
     total_books = len(books)    
 
@@ -598,8 +565,7 @@ def show_statistics():
             month_fin_books.append(book)
         
 #-------- Most read author (of books being read or finished)     
-    # max() finds the largest element in an iterable
-
+    
     author_list = []
     for author in books:
         if author["status"] != "want to read":
@@ -609,23 +575,17 @@ def show_statistics():
     #print(most_author)
         
 #-------- Current reading streak (most days in a row at least one book is in reading status)
-
-    # note there is a gloabal reading_log = [] of date objects
-        
-    # need a list of just dates and to change the strings to date objects.
+    # note there is a gloabal reading_log = [] of date objects        
+    
     page_dates = []
     for entry in reading_log:        
         converted_date = datetime.strptime(entry["date of reading"], "%Y-%m-%d").date()
         page_dates.append(converted_date)        
-    
-    # trim dates with set() to remove repeats
-    # set() may not preserve order so sort list in decending order
-    # need date now but as object. just use date.today() not datetime
+        
     today = date.today()
     
     page_dates = set(page_dates)
     
-    # page_dates is just dates so dont need key
     sorted_page_dates = sorted(page_dates, reverse=True)
 
     days_streak = []
@@ -637,19 +597,19 @@ def show_statistics():
 
     stats_table = [
         ["Total Books Tracked", total_books],
-        ["Average Rating of Finished Books", average_rating],
+        ["Average Rating of Finished Books", f"{average_rating:.0f}"],
         ["Books Fininished This Month", len(month_fin_books)],
         ["Most Read Author", most_author],
         ["Current Reading Streak Days", len(days_streak)]
     ]
-    # print("---Book Statistics---")
-    # print(tabulate(stats_table, tablefmt="fancy_grid"))
+    
     return stats_table
 
 #-----------------------------------------------------------------------
 #   option [8] Search By Title or Author
 #-----------------------------------------------------------------------
 def search():
+
     search_term = input("Enter search term for Title or Author search: ").strip().lower()
     searched_list = []
     for book in books:
@@ -661,7 +621,7 @@ def search():
     
     if searched_list:
         print("---Displaying Matching Books---")
-        print(tabulate(searched_list,headers = "keys", tablefmt="fancy_grid"))
+        print(tabulate(searched_list,headers = "keys", tablefmt="grid"))
     else:
         print("No matching books.")
 
@@ -673,7 +633,7 @@ def delete_book():
     print('Displaying All Books')
     numbered_list = create_numbered_list()
 
-    print(tabulate(numbered_list,headers = "keys", tablefmt="fancy_grid")) 
+    print(tabulate(numbered_list,headers = "keys", tablefmt="grid")) 
 
     # user chooses task # to delete.
     removed_book_list = []
@@ -684,7 +644,7 @@ def delete_book():
                 print(f"Book number {choice} deleted.")                
                 removed_book = books.pop(choice-1) 
                 removed_book_list.append(removed_book)                               
-                print(tabulate(removed_book_list,headers = "keys", tablefmt="fancy_grid"))                
+                print(tabulate(removed_book_list,headers = "keys", tablefmt="grid"))                
                 break
             else:
                 print("Number out of range. Please try again.")
@@ -696,15 +656,13 @@ def delete_book():
 #   option [10] Reading Goal
 #-----------------------------------------------------------------------
 def set_goal():
-    # feature asks for user input books_goal so gloabal value ignored.
-
+    
     #-------- Books finished this year
     now = datetime.now()    
     this_year_fin_books = []
     # loop through books and append all with date finished this year
     date_string = now.strftime("%Y-%m-%d %H:%M:%S") 
     for book in books:        
-        #date_string = now.strftime("%Y-%m-%d %H:%M:%S")       
 
         book_date = book['date finished'][:4]
         year_now = date_string[:4]
@@ -730,11 +688,9 @@ def set_goal():
 
             if answer == "override":
                 reading_goals.clear()                
-                break 
-
+                break
             elif answer == "continue":
                 return
-
             else:
                 print("Invalid option. Please try again.")
 
@@ -744,7 +700,6 @@ def set_goal():
             reading_goals["year_goal"] = int(input("Enter yearly book goal: "))
             print(f"goal of {reading_goals["year_goal"]} books entered.")
             break         
-
         except ValueError:
             print("Invalid number. Please try again.")
 
@@ -831,7 +786,7 @@ while True:
     elif option == '7':
         stats_table = show_statistics()
         print("---Book Statistics---")
-        print(tabulate(stats_table, tablefmt="fancy_grid"))
+        print(tabulate(stats_table, tablefmt="grid"))
     elif option == '8':
         search()
     elif option == '9':
