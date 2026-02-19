@@ -105,6 +105,7 @@ def show_menu():
     print("[8] Search By Title or Author")
     print("[9] Delete a Book")
     print("[10] Book Reading Goals")
+    print("[11] Export Reading Statistics Report")
 
 
 #-----------------------------------------------------------------------
@@ -626,8 +627,9 @@ def show_statistics():
         ["Most Read Author", most_author],
         ["Current Reading Streak Days", len(days_streak)]
     ]
-    print("---Book Statistics---")
-    print(tabulate(stats_table, tablefmt="fancy_grid"))
+    # print("---Book Statistics---")
+    # print(tabulate(stats_table, tablefmt="fancy_grid"))
+    return stats_table
 
 #-----------------------------------------------------------------------
 #   option [8] Search By Title or Author
@@ -674,11 +676,6 @@ def delete_book():
 
         except ValueError:
             print("Invalid entry. Please try again.")
-
-#-----------------------------------------------------------------------
-#   sub feature determin goal status
-#-----------------------------------------------------------------------
-
 
 #-----------------------------------------------------------------------
 #   option [10] Reading Goal
@@ -736,6 +733,22 @@ def set_goal():
         except ValueError:
             print("Invalid number. Please try again.")
 
+#-----------------------------------------------------------------------
+#   option [11] Export Reading Statistics Report (CSV)
+#-----------------------------------------------------------------------
+def export_report():
+    stats_table = show_statistics()
+    now = datetime.now()
+    date_string = now.strftime("%Y-%m-%d %H:%M:%S")     
+    date_now = date_string[:10]
+
+    with open(f'{date_now} Reading_Stats.csv', 'w') as file:
+        
+        for stat in stats_table:
+            file.write(f"{stat[0]},{stat[1]}\n")
+    
+    file_path = os.path.abspath(f'{date_now} Reading_Stats.csv')
+    print(f"CSV file exported to:\n{file_path}")
 
 #-----------------------------------------------------------------------
 #   function to write to books json
@@ -788,7 +801,9 @@ while True:
         update_rating()
         write_json()
     elif option == '7':
-        show_statistics()
+        stats_table = show_statistics()
+        print("---Book Statistics---")
+        print(tabulate(stats_table, tablefmt="fancy_grid"))
     elif option == '8':
         search()
     elif option == '9':
@@ -797,5 +812,7 @@ while True:
     elif option == '10':
         set_goal()
         write_reading_goals_json()
+    elif option == '11':
+        export_report()
     else:
         print("Invalid action. Please try again.")
