@@ -90,6 +90,19 @@ def datetime_now_stamp():
 #     print(len(f'{len(unique_dates)} Days'))
 
 #-----------------------------------------------------------------------
+#   showing reading pace today
+#-----------------------------------------------------------------------
+
+date_string = datetime_now_stamp()   
+pages_sum = sum(log['pages read'] for log in reading_log if log['date of reading'] == date_string)
+if pages_sum == 0:
+    print(f'No pages read today.{pages_sum}')
+elif pages_sum == 1:
+    print(f'1 page read today.')
+else:
+    print(f'Current reading pace: {pages_sum} pages read today.')
+
+#-----------------------------------------------------------------------
 #   showing menu
 #-----------------------------------------------------------------------
 
