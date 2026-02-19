@@ -2,6 +2,7 @@ import json
 from tabulate import tabulate
 from datetime import datetime,date,timedelta
 import os
+import random
 
 valid_status = ['want to read', 'reading', 'finished']
 valid_category = ["sci fi", "fantasy", "mystery", "thriller", "romance", "horror", "graphic novel"]
@@ -106,6 +107,7 @@ def show_menu():
     print("[9] Delete a Book")
     print("[10] Book Reading Goals")
     print("[11] Export Reading Statistics Report")
+    print("[12] Get Book Recommendation")
 
 
 #-----------------------------------------------------------------------
@@ -206,7 +208,7 @@ def add_book():
     #                 print("Blank is invalid entry. Please try again.")
     #             else:
     #                 break
-                
+
     #         except ValueError:
     #             print("Invalid entry. Please try again.")
 
@@ -751,6 +753,19 @@ def export_report():
     print(f"CSV file exported to:\n{file_path}")
 
 #-----------------------------------------------------------------------
+#   option [12] Get Book Recommendation from want to read list
+#-----------------------------------------------------------------------
+def book_recommendation():
+    # make list of want to read book titles
+    want_to_books = []
+    for book in books:
+        if book["status"] == "want to read":
+            want_to_books.append(book['title'])
+    
+    recommended_book = random.choice(want_to_books)
+    print(f"Recommending to read {recommended_book}.")
+    
+#-----------------------------------------------------------------------
 #   function to write to books json
 #-----------------------------------------------------------------------
 def write_json():
@@ -814,5 +829,7 @@ while True:
         write_reading_goals_json()
     elif option == '11':
         export_report()
+    elif option == '12':
+        book_recommendation()
     else:
         print("Invalid action. Please try again.")
