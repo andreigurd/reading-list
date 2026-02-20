@@ -150,9 +150,11 @@ def add_book():
 
         if status == "finished":
             finish_flag = "finish_flag_active"
+            break
 
         if status == "reading":
-            reading_flag = "reading_flag_active"            
+            reading_flag = "reading_flag_active"
+            break            
         
         if status == "want to read":
             break
@@ -391,7 +393,9 @@ def update_status():
         except ValueError:
             print("Invalid entry. Please try again.")
 
-        # user chooses new status.   
+        # user chooses new status.
+        
+    selected_book = books[choice-1]   
     while True:        
         status = input("Enter status update (Want to Read / Reading / Finished): ").lower()
 
@@ -402,22 +406,20 @@ def update_status():
         elif status == "reading":
             started_reading = datetime_now_stamp()
             date_finished = "not finished"
+            selected_book['started reading '] = started_reading
             break
         elif status == "finished":
                 date_finished = datetime_now_stamp()
+                selected_book['date finished'] = date_finished
                 current_page = 0
                 selected_book['current page'] = current_page
                 break
         else:
             print("Invalid Status. Please try again.")
             
-    # choice-1 is index for global books list that we want change status.
-    selected_book = books[choice-1]
-
+    
     selected_book['status'] = status
-    selected_book['started reading '] = started_reading
-    selected_book['date finished'] = date_finished 
-    #selected_book['current page'] = current_page 
+    
     print(f'({selected_book["title"]}) book marked {status}.')        
 
 #-----------------------------------------------------------------------
