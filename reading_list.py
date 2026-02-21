@@ -92,7 +92,8 @@ else:
 #-----------------------------------------------------------------------
 
 def show_menu():
-    print("")    
+    print("")
+    print("Welcome to Reading Tracker")     
     print("[0] Exit")
     print("[1] Add Book")
     print("[2] View All Books")
@@ -450,7 +451,7 @@ def log_pages_read():
 
     while True:
         try:
-            current_page = int(input(f'Enter current page number of ({selected_book['title']}): '))
+            current_page = int(input(f"Enter current page number of ({selected_book['title']}): "))
             if current_page > previous_page:
                 break
             elif current_page == previous_page:
@@ -700,7 +701,7 @@ def set_goal():
     while True:        
         try:
             reading_goals["year_goal"] = int(input("Enter yearly book goal: "))
-            print(f"goal of {reading_goals["year_goal"]} books entered.")
+            print(f"goal of {reading_goals['year_goal']} books entered.")
             break         
         except ValueError:
             print("Invalid number. Please try again.")
@@ -732,8 +733,14 @@ def book_recommendation():
         if book["status"] == "want to read":
             want_to_books.append(book['title'])
     
-    recommended_book = random.choice(want_to_books)
-    print(f"Recommending to read {recommended_book}.")
+    #make list of all books want to read
+
+    
+    if want_to_books:
+        recommended_book = random.choice(want_to_books)
+        print(f"Recommending to read {recommended_book}.")
+    else:
+        print(f'No books with "Want to Read" status.')
     
 #-----------------------------------------------------------------------
 #   function to write to books json
